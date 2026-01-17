@@ -102,7 +102,7 @@ const amanRice = {
     High: [0, 0],
     "Very High": [0, 0],
   },
-} as const;
+};
 
 const bigList5 = {
   N: {
@@ -153,7 +153,7 @@ const bigList5 = {
     High: [0, 0],
     "Very High": [0, 0],
   },
-} as const;
+};
 
 const bigList4 = {
   N: {
@@ -204,7 +204,7 @@ const bigList4 = {
     High: [0, 0],
     "Very High": [0, 0],
   },
-} as const;
+};
 
 const bigList3 = {
   N: {
@@ -255,7 +255,7 @@ const bigList3 = {
     High: [0, 0],
     "Very High": [0, 0],
   },
-} as const;
+};
 
 const VARIETY_OPTIONS: Record<string, Record<string, Record<string, number[]>>> = {
   "Aman Rice": amanRice,
