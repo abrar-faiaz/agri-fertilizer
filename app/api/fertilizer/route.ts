@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-const STVI_THRESHOLDS = {
+type STVIClass = "Very Low" | "Low" | "Medium" | "Optimum" | "High" | "Very High";
+
+const STVI_THRESHOLDS: Record<string, Record<STVIClass, number[]>> = {
   N: {
     "Very Low": [0.0, 0.09],
     Low: [0.091, 0.18],
@@ -51,7 +53,7 @@ const STVI_THRESHOLDS = {
     High: [0.61, 0.75],
     "Very High": [0.751, 999.999],
   },
-} as const;
+};
 
 const amanRice = {
   N: {
@@ -277,12 +279,12 @@ const FERTILIZER_CONVERSION: Record<
   B: { product: "Boric acid", ratio: 5.88 },
 };
 
-const classifySoilTest = (nutrient: keyof typeof STVI_THRESHOLDS, value: number) => {
+const classifySoilTest = (nutrient: keyof typeof STVI_THRESHOLDS, value: number): STVIClass | null => {
   const thresholds = STVI_THRESHOLDS[nutrient];
   for (const [stviClass, bounds] of Object.entries(thresholds)) {
     const [lo, hi] = bounds;
     if (value >= lo && value <= hi) {
-      return stviClass;
+      return stviClass as STVIClass;
     }
   }
   return null;
