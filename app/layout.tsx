@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Agri udyod | Smart Agriculture Suite",
+  title: "Agri Udyog | Smart Agriculture Suite",
   description:
-    "Agri udyod provides fertilizer recommendations, plant disease detection, and crop yield prediction tools.",
+    "Agri Udyog provides fertilizer recommendations, plant disease detection, and crop yield prediction tools.",
 };
 
 export default function RootLayout({
@@ -35,7 +35,7 @@ export default function RootLayout({
                 AU
               </div>
               <div>
-                <p className="text-sm font-semibold text-emerald-950">Agri udyod</p>
+                <p className="text-sm font-semibold text-emerald-950">Agri Udyog</p>
                 <p className="text-xs text-emerald-700">Smart Agriculture Suite</p>
               </div>
             </div>
@@ -58,7 +58,7 @@ export default function RootLayout({
         {children}
         <footer className="border-t border-emerald-100 bg-white">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-6 py-6 text-sm text-emerald-700 md:flex-row md:items-center md:justify-between">
-            <p>© 2026 Agri udyod. All rights reserved.</p>
+            <p>© 2026 Agri Udyog. All rights reserved.</p>
             <p>Built for smarter, sustainable farming.</p>
           </div>
         </footer>

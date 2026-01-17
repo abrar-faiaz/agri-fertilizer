@@ -7,7 +7,7 @@ export default function Home() {
         <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div className="space-y-6">
             <p className="inline-flex items-center rounded-full bg-emerald-100 px-4 py-1 text-sm font-semibold text-emerald-700">
-              Agri udyod • Smart Agriculture Suite
+              Agri Udyog • Smart Agriculture Suite
             </p>
             <h1 className="text-4xl font-semibold leading-tight text-emerald-950 md:text-5xl">
               Make agronomy decisions faster with AI-powered insights.
