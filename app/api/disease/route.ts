@@ -8,8 +8,25 @@ import { existsSync } from "fs";
 
 export const runtime = "nodejs";
 
-// Check if running on Vercel (production)
-const isVercel = process.env.VERCEL === "1";
+// Check if running on Vercel at runtime
+function isRunningOnVercel(): boolean {
+  return !!(process.env.VERCEL || process.env.VERCEL_ENV || process.env.VERCEL_URL);
+}
+
+// Check if Python is available locally
+function canRunPythonLocally(): boolean {
+  try {
+    const venvPython = path.join(process.cwd(), ".venv", "bin", "python");
+    if (existsSync(venvPython)) {
+      return true;
+    }
+    // Check if python3 exists by checking common paths
+    const commonPaths = ["/usr/bin/python3", "/usr/local/bin/python3"];
+    return commonPaths.some(p => existsSync(p));
+  } catch {
+    return false;
+  }
+}
 
 function getPythonPath(): string {
   const venvPython = path.join(process.cwd(), ".venv", "bin", "python");
@@ -20,10 +37,10 @@ function getPythonPath(): string {
 }
 
 // Call the Python serverless function on Vercel
-async function callPythonServerless(imageBase64: string, model: string): Promise<unknown> {
-  const baseUrl = process.env.VERCEL_URL 
-    ? `https://${process.env.VERCEL_URL}` 
-    : process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+async function callPythonServerless(imageBase64: string, model: string, requestUrl: string): Promise<unknown> {
+  // Build the URL for the Python serverless function
+  const url = new URL(requestUrl);
+  const baseUrl = `${url.protocol}//${url.host}`;
   
   const response = await fetch(`${baseUrl}/api/disease-python`, {
     method: "POST",
@@ -37,7 +54,8 @@ async function callPythonServerless(imageBase64: string, model: string): Promise
   });
 
   if (!response.ok) {
-    throw new Error(`Python function failed: ${response.status}`);
+    const errorText = await response.text();
+    throw new Error(`Python function failed: ${response.status} - ${errorText}`);
   }
 
   return response.json();
@@ -80,6 +98,11 @@ async function runLocalPython(tempFilePath: string, model: string): Promise<unkn
 
 export async function POST(request: Request) {
   let tempFilePath: string | null = null;
+  
+  // Determine execution mode at runtime
+  const onVercel = isRunningOnVercel();
+  const canUsePython = canRunPythonLocally();
+  const useServerlessFunction = onVercel || !canUsePython;
 
   try {
     const formData = await request.formData();
@@ -95,12 +118,12 @@ export async function POST(request: Request) {
     
     let data: unknown;
 
-    if (isVercel) {
-      // On Vercel: call the Python serverless function with base64 image
+    if (useServerlessFunction) {
+      // On Vercel or no local Python: call the Python serverless function
       const base64Image = `data:${image.type};base64,${buffer.toString("base64")}`;
-      data = await callPythonServerless(base64Image, model);
+      data = await callPythonServerless(base64Image, model, request.url);
     } else {
-      // Local development: use spawn
+      // Local development with Python available: use spawn
       const extension = image.name.split(".").pop() ?? "jpg";
       tempFilePath = path.join(tmpdir(), `${randomUUID()}.${extension}`);
       await writeFile(tempFilePath, buffer);
